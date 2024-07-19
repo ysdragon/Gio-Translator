@@ -79,12 +79,12 @@ jobs:
           install: |
             apt-get update -q -y
             apt-get -q -y install wget gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
-            
-            if [ "{{matrix.arch}}" = "aarch64" ]; then
+
+            if [ "${{ matrix.arch }}" = "aarch64" ]; then
                 wget https://go.dev/dl/go1.22.5.linux-arm64.tar.gz
                 tar -C /usr/local -xzf go1.22.5.linux-arm64.tar.gz
                 export PATH=$PATH:/usr/local/go/bin
-            elif [ "{{matrix.arch}}" = "riscv64" ]; then
+            elif [ "${{ matrix.arch }}" = "riscv64" ]; then
                 wget https://go.dev/dl/go1.22.5.linux-riscv64.tar.gz
                 tar -C /usr/local -xzf go1.22.5.linux-riscv64.tar.gz
                 export PATH=$PATH:/usr/local/go/bin
