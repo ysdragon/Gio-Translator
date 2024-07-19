@@ -21,7 +21,7 @@ Gio Translator is a cross-platform application built using Golang and the Gio UI
 
 ### Download
 
-You can download the latest release of Gio Translator from the [Releases](https://github.com/ysdragon/gio-translator/releases) page. Choose the appropriate version for your operating system.
+You can download the latest release of Gio Translator from the [Releases](https://github.com/ysdragon/Gio-Translator/releases) page. Choose the appropriate version for your operating system.
 
 ### Building from Source
 
@@ -29,7 +29,7 @@ To build Gio Translator from source, follow these steps:
 
 1. Clone this repository to your local machine
 ```bash
-git clone https://github.com/ysdragon/gio-translator.git
+git clone https://github.com/ysdragon/Gio-Translator.git
 ```
 2. Install the necessary dependencies
 ```bash
