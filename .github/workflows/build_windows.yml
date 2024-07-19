@@ -36,9 +36,7 @@ jobs:
 
       - name: Upload Release Assets
         run: |
-          export TAG_NAME="${{ github.event.release.tag_name }}"
-          export REF_NAME="${{ github.ref_name }}"
-          gh release upload $TAG_NAME ./dist/Gio-Translator-windows-$REF_NAME-amd64.zip
-          gh release upload $TAG_NAME ./dist/Gio-Translator-windows-$REF_NAME-i386.zip
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-amd64.zip
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-i386.zip
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
