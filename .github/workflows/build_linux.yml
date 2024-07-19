@@ -78,7 +78,7 @@ jobs:
 
           install: |
             apt-get update -q -y
-            apt-get -q -y install gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+            apt-get -q -y install wget gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
             
             if [ "{{matrix.arch}}" = "aarch64" ]; then
                 wget https://go.dev/dl/go1.22.5.linux-arm64.tar.gz
@@ -92,6 +92,7 @@ jobs:
             
           run: |
             echo "Building for ${{ matrix.arch }}..."
+            export PATH=$PATH:/usr/local/go/bin
             CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
             cp LICENSE /dist/${{ matrix.arch }}
             tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator ./LICENSE
