@@ -93,11 +93,9 @@ jobs:
           run: |
             echo "Building for ${{ matrix.arch }}..."
             export PATH=$PATH:/usr/local/go/bin
-            CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o ./dist/${{ matrix.arch }}/Gio-Translator .
+            CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
             cp LICENSE /dist/${{ matrix.arch }}
             tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator ./LICENSE
-      - name: Upload Release Asset
-        run: |
-          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz
-        env:
-          GH_TOKEN: ${{ github.token }}
+            gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz
+          env:
+            GH_TOKEN: ${{ github.token }}
