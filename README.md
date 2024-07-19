@@ -14,8 +14,7 @@ Gio Translator is a cross-platform application built using Golang and the Gio UI
 
 
 
-<img src="screenshots/screenshot1.png" style="margin-bottom:20px;}" height="308.5" width="200">
-<img src="screenshots/screenshot2.png" width="200">
+<img src="screenshots/screenshot1.png" height="311.9" width="200"><img src="screenshots/screenshot2.png" width="200">
 
 
 ## Getting Started
