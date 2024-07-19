@@ -10,6 +10,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        arch: [amd64, arm64, riscv64]
+
     steps:
       - name: Update dependencies
         run: sudo apt-get update
@@ -23,22 +28,22 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.22.1
+          go-version: 1.22.5
 
-      - name: Build Linux
+      - name: Build for ${{ matrix.arch }}
         run: |
-          echo "Building Linux amd64..."
+          echo "Building Linux ${{ matrix.arch }}..."
           export TAG_NAME="${{ github.event.release.tag_name }}"
-          export ARCH="amd64"
+          export ARCH="${{ matrix.arch }}"
           CGO_ENABLED=1 GOOS=linux GOARCH=$ARCH go build -o ./dist/$ARCH/Gio-Translator .
           cp ./LICENSE ./dist/$ARCH
           tar -cJf ./dist/Gio-Translator-linux-$TAG_NAME-$ARCH.tar.xz --directory=./dist/$ARCH Gio-Translator ./LICENSE
           rm -rf ./dist/$ARCH
 
-      - name: Upload Release Asset
+      - name: Upload Release Asset for ${{ matrix.arch }}
         run: |
           export TAG_NAME="${{ github.event.release.tag_name }}"
           export REF_NAME="${{ github.ref_name }}"
-          gh release upload $TAG_NAME ./dist/Gio-Translator-linux-$REF_NAME-amd64.tar.xz
+          gh release upload $TAG_NAME ./dist/Gio-Translator-linux-$REF_NAME-${{ matrix.arch }}.tar.xz
         env:
           GH_TOKEN: ${{ github.token }}
