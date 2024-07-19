@@ -8,13 +8,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build_amd64:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        arch: [amd64, arm64, riscv64]
-
     steps:
       - name: Update dependencies
         run: sudo apt-get update
@@ -30,20 +25,71 @@ jobs:
         with:
           go-version: 1.22.5
 
-      - name: Build for ${{ matrix.arch }}
+      - name: Build Linux
         run: |
-          echo "Building Linux ${{ matrix.arch }}..."
+          echo "Building Linux amd64..."
           export TAG_NAME="${{ github.event.release.tag_name }}"
-          export ARCH="${{ matrix.arch }}"
+          export ARCH="amd64"
           CGO_ENABLED=1 GOOS=linux GOARCH=$ARCH go build -o ./dist/$ARCH/Gio-Translator .
           cp ./LICENSE ./dist/$ARCH
           tar -cJf ./dist/Gio-Translator-linux-$TAG_NAME-$ARCH.tar.xz --directory=./dist/$ARCH Gio-Translator ./LICENSE
           rm -rf ./dist/$ARCH
 
-      - name: Upload Release Asset for ${{ matrix.arch }}
+      - name: Upload Release Asset
         run: |
           export TAG_NAME="${{ github.event.release.tag_name }}"
           export REF_NAME="${{ github.ref_name }}"
-          gh release upload $TAG_NAME ./dist/Gio-Translator-linux-$REF_NAME-${{ matrix.arch }}.tar.xz
+          gh release upload $TAG_NAME ./dist/Gio-Translator-linux-$REF_NAME-amd64.tar.xz
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build_riscv64_arm64:
+    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu_latest
+          - arch: riscv64
+            distro: ubuntu_latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: uraimo/run-on-arch-action@v2
+        name: Build artifact
+        id: build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          githubToken: ${{ github.token }}
+
+          setup: |
+            mkdir -p "${PWD}/dist/${{ matrix.arch }}"
+
+          dockerRunArgs: |
+            --volume "${PWD}/dist/${{ matrix.arch }}:/dist/${{ matrix.arch }}"
+
+          env: |
+            artifact_name: Gio-Translator-${{ github.event.release.tag_name }}-${{ matrix.arch }}
+
+          shell: /bin/sh
+
+          install: |
+            sudo apt-get update
+            sudo apt-get install golang gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+
+          run: |
+            echo "Building for ${{ matrix.arch }}..."
+            CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
+            cp LICENSE /dist/${{ matrix.arch }}
+            tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator ./LICENSE
+            rm -rf /dist/${{ matrix.arch }}
+
+      - name: Upload Release Asset
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-amd64.tar.xz
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-arm64.tar.xz
         env:
           GH_TOKEN: ${{ github.token }}
