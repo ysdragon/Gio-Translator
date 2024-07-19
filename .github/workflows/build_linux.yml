@@ -40,3 +40,5 @@ jobs:
           export TAG_NAME="${{ github.event.release.tag_name }}"
           export REF_NAME="${{ github.ref_name }}"
           gh release upload $TAG_NAME ./dist/Gio-Translator-linux-$REF_NAME-amd64.tar.xz
+        env:
+          GH_TOKEN: ${{ github.token }}
