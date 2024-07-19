@@ -81,7 +81,7 @@ jobs:
             apt-get -q -y install software-properties-common
             add-apt-repository ppa:longsleep/golang-backports
             apt-get update -q -y
-            apt-get -q -y install golang-go gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+            apt-get -q -y install golang-1.22-go gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
 
           run: |
             echo "Building for ${{ matrix.arch }}..."
@@ -92,7 +92,6 @@ jobs:
 
       - name: Upload Release Asset
         run: |
-          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-amd64.tar.xz
-          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-arm64.tar.xz
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz
         env:
           GH_TOKEN: ${{ github.token }}
