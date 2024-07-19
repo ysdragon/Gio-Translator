@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -40,11 +40,11 @@ jobs:
 
       - name: Build android arm64
         run: |
-          gogio -target android -arch arm64 -minsdk 21  -appid com.giotranslator.dragondev -o Gio-Translator-${{ github.ref_name }}-arm64.apk .
-          
+          gogio -target android -arch arm64 -minsdk 21 -appid com.giotranslator.dragondev -o Gio-Translator-${{ github.ref_name }}-arm64.apk .
+
       - name: Build android arm
         run: |
-          gogio -target android -arch arm -minsdk 21  -appid com.giotranslator.dragondev -o "Gio-Translator-${{ github.ref_name }}-arm.apk" .
+          gogio -target android -arch arm -minsdk 21 -appid com.giotranslator.dragondev -o "Gio-Translator-${{ github.ref_name }}-arm.apk" .
 
       - name: Upload Release Assets
         run: |
