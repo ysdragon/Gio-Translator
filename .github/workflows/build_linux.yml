@@ -73,7 +73,6 @@ jobs:
 
           env: |
             artifact_name: Gio-Translator-${{ github.event.release.tag_name }}-${{ matrix.arch }}
-            GH_TOKEN: ${{ github.token }}
 
           shell: /bin/sh
 
@@ -97,4 +96,8 @@ jobs:
             CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
             cp LICENSE /dist/${{ matrix.arch }}
             tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator ./LICENSE
-            gh release upload ${{ github.event.release.tag_name }} /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz            
+      - name: Upload Release Asset
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} ${PWD}/dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz
+        env:
+          GH_TOKEN: ${{ github.token }}
