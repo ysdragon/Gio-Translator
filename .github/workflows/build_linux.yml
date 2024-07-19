@@ -1,0 +1,38 @@
+name: Build Linux
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update dependencies
+        run: sudo apt-get update
+
+      - name: Install specific dependencies
+        run: sudo apt install gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22.5
+          
+      - name: Build Linux
+        run: |
+          @echo "Building Linux amd64..."
+          CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o ./dist/amd64/Gio-Translator .
+          cp ./LICENSE ./dist/amd64
+          tar -cJf ./dist/Gio-Translator-linux-$(TAG_NAME)-amd64.tar.xz --directory=./dist/amd64 Gio-Translator ./LICENSE
+          rm -rf ./dist/amd64
+          
+      - name: Upload Release Asset
+        run: |
+          gh release upload ${{github.event.release.tag_name}} ./dist/Gio-Translator-linux-${{ github.ref_name }}-amd64.tar.xz
