@@ -78,7 +78,9 @@ jobs:
 
           install: |
             apt-get update -q -y
-            apt-get -q -y install golang gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+            add-apt-repository ppa:longsleep/golang-backports
+            apt-get update -q -y
+            apt-get -q -y install golang-go gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
 
           run: |
             echo "Building for ${{ matrix.arch }}..."
