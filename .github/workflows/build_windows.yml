@@ -1,0 +1,41 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22.5
+          
+      - name: Install gogio tool
+        run: go install gioui.org/cmd/gogio@latest
+  
+      - name: Build windows
+        run: |
+          @echo "Building Windows..."
+          gogio -target=windows -arch=amd64 -o dist\amd64\Gio-Translator.exe .
+          gogio -target=windows -arch=386 -o dist\i386\Gio-Translator.exe .
+          powershell -Command "Compress-Archive -Path dist\amd64\Gio-Translator.exe -Destination dist\Gio-Translator-windows-$(TAG_NAME)-amd64.zip"
+          powershell -Command "Compress-Archive -Path dist\i386\Gio-Translator.exe -Destination dist\Gio-Translator-windows-$(TAG_NAME)-i386.zip"
+          rm -rf .\dist\amd64
+          rm -rf .\dist\i386
+          
+      - name: Upload Release Asset
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-amd64.zip
+          gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-i386.zip
