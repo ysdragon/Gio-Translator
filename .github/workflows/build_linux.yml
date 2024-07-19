@@ -57,6 +57,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: uraimo/run-on-arch-action@v2
         name: Build artifact
         id: build
@@ -64,18 +65,11 @@ jobs:
           arch: ${{ matrix.arch }}
           distro: ${{ matrix.distro }}
           githubToken: ${{ github.token }}
-
           setup: |
-            mkdir -p "${PWD}/dist/${{ matrix.arch }}"
-
+            mkdir -p "${{ github.workspace }}/dist/${{ matrix.arch }}"
           dockerRunArgs: |
-            --volume "${PWD}/dist/${{ matrix.arch }}:/dist/${{ matrix.arch }}"
-
-          env: |
-            artifact_name: Gio-Translator-${{ github.event.release.tag_name }}-${{ matrix.arch }}
-
+            --volume "${{ github.workspace }}/dist/${{ matrix.arch }}:/dist/${{ matrix.arch }}"
           shell: /bin/sh
-
           install: |
             apt-get update -q -y
             apt-get -q -y install wget gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
@@ -89,15 +83,16 @@ jobs:
                 tar -C /usr/local -xzf go1.22.5.linux-riscv64.tar.gz
                 export PATH=$PATH:/usr/local/go/bin
             fi
-            
-          run: |
-            echo "Building for ${{ matrix.arch }}..."
-            export PATH=$PATH:/usr/local/go/bin
-            CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
-            cp LICENSE /dist/${{ matrix.arch }}
-            tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator ./LICENSE
+
+        run: |
+          echo "Building for ${{ matrix.arch }}..."
+          export PATH=$PATH:/usr/local/go/bin
+          CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
+          cp LICENSE /dist/${{ matrix.arch }}
+          tar -cJf /dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz --directory=/dist/${{ matrix.arch }}/ Gio-Translator LICENSE
+
       - name: Upload Release Asset
         run: |
-          gh release upload ${{ github.event.release.tag_name }} ${PWD}/dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz
+          gh release upload ${{ github.event.release.tag_name }} "${{ github.workspace }}/dist/Gio-Translator-linux-${{ github.event.release.tag_name }}-${{ matrix.arch }}.tar.xz"
         env:
-          GH_TOKEN: ${{ github.token }}
+            GH_TOKEN: ${{ github.token }}
