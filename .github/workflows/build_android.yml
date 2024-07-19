@@ -1,0 +1,54 @@
+name: Build Android
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22.5
+
+      - name: Install gogio tool
+        run: go install gioui.org/cmd/gogio@latest
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "zulu"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: NDK List Installed
+        run: sdkmanager --list_installed
+
+      - name: Setup NDK packages
+        run: sdkmanager "platform-tools" "ndk;26.3.11579264" "platforms;android-35" "sources;android-35" "cmdline-tools;12.0"
+
+      - name: Build android arm64
+        run: |
+          gogio -target android -arch arm64 -minsdk 21  -appid com.giotranslator.dragondev -o Gio-Translator-${{ github.ref_name }}-arm64.apk .
+          
+      - name: Build android arm
+        run: |
+          gogio -target android -arch arm -minsdk 21  -appid com.giotranslator.dragondev -o "Gio-Translator-${{ github.ref_name }}-arm.apk" .
+
+      - name: Upload Release Assets
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} ./Gio-Translator-${{ github.ref_name }}-arm64.apk
+          gh release upload ${{ github.event.release.tag_name }} ./Gio-Translator-${{ github.ref_name }}-arm.apk
+        env:
+          GH_TOKEN: ${{ github.token }}
