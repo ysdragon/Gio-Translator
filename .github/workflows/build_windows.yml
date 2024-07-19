@@ -39,4 +39,4 @@ jobs:
           gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-amd64.zip
           gh release upload ${{ github.event.release.tag_name }} ./dist/Gio-Translator-windows-${{ github.ref_name }}-i386.zip
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
