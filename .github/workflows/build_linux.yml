@@ -78,11 +78,18 @@ jobs:
 
           install: |
             apt-get update -q -y
-            apt-get -q -y install software-properties-common
-            add-apt-repository ppa:longsleep/golang-backports
-            apt-get update -q -y
-            apt-get -q -y install golang-1.22-go gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
-
+            apt-get -q -y install gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+            
+            if [ "{{matrix.arch}}" = "aarch64" ]; then
+                wget https://go.dev/dl/go1.22.5.linux-arm64.tar.gz
+                tar -C /usr/local -xzf go1.22.5.linux-arm64.tar.gz
+                export PATH=$PATH:/usr/local/go/bin
+            elif [ "{{matrix.arch}}" = "riscv64" ]; then
+                wget https://go.dev/dl/go1.22.5.linux-riscv64.tar.gz
+                tar -C /usr/local -xzf go1.22.5.linux-riscv64.tar.gz
+                export PATH=$PATH:/usr/local/go/bin
+            fi
+            
           run: |
             echo "Building for ${{ matrix.arch }}..."
             CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} go build -o /dist/${{ matrix.arch }}/Gio-Translator .
