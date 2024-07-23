@@ -65,8 +65,8 @@ func main() {
 		w.Option(
 			// Set the window title
 			app.Title(appName),
-			// Set the window Size (width, height)
-			app.Size(unit.Dp(385), unit.Dp(600)),
+			// Set the window max Size (width, height)
+			app.MaxSize(unit.Dp(385), unit.Dp(600)),
 		)
 		for {
 			switch event := w.Event().(type) {
