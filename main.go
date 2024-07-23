@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 
 	"gioui.org/app"
 	"gioui.org/font/gofont"
@@ -241,9 +242,13 @@ func frame(gtx C, w *app.Window) D {
 		},
 		func(gtx C) D {
 			result := material.Body1(th, log)
-			if isError {
+
+			if isArabic(log) {
+				result.Alignment = text.End
+			} else if isError {
 				result.Color = errorColor
 			}
+
 			return result.Layout(gtx)
 		},
 		func(gtx C) D {
@@ -270,4 +275,14 @@ func frame(gtx C, w *app.Window) D {
 		return layout.UniformInset(unit.Dp(10)).Layout(gtx, widgets[i])
 	})
 
+}
+
+// Function to detect if the given string is arabic.
+func isArabic(s string) bool {
+	for _, r := range s {
+		if unicode.Is(unicode.Arabic, r) {
+			return true
+		}
+	}
+	return false
 }
