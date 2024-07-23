@@ -7,7 +7,7 @@ Gio Translator is a cross-platform application built using Golang and the Gio UI
 - Cross-platform compatibility
 - User-friendly interface
 - Text translation between various languages
-- Translation services powered by MyMemory and UnOfficial Google Translate
+- Translation services powered by MyMemory, Unofficial Google Translate, and Unofficial DuckDuckGo Ai
 - Built with Golang and the Gio UI library
 
 ## Screenshots
@@ -48,13 +48,13 @@ go build -o gio-translator
 
 - Input the text you want to translate.
 - Enter the source language and the target language.
-- Select between MyMemory and Google Translate
+- Select between MyMemory, Google Translate, AI.
 - Click the translate button to see the translation.
 
 ## TODO
 
 * [ ]  Dark theme.
-* [ ]  AI as a translation source.
+* [x]  AI as a translation source.
 
 ## Technologies Used
 

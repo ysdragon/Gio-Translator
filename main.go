@@ -114,6 +114,8 @@ func frame(gtx C, w *app.Window) D {
 					translateSource = "MyMemory"
 				case "gt":
 					translateSource = "GoogleTranslate"
+				case "ai":
+					translateSource = "AI"
 				default:
 					translateSource = "MyMemory"
 				}
@@ -123,6 +125,7 @@ func frame(gtx C, w *app.Window) D {
 				return layout.Flex{}.Layout(gtx,
 					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "mm", "MyMemory").Layout),
 					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "gt", "Google Translate").Layout),
+					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "ai", "AI").Layout),
 				)
 			})
 		},
@@ -176,7 +179,16 @@ func frame(gtx C, w *app.Window) D {
 							showcopyBtn = false
 							return
 						}
-
+					case "AI":
+						log, err = sources.DuckDuckGoAiTranslate(text, from, to)
+						isError = false
+						showcopyBtn = true
+						if err != nil {
+							log = "Error"
+							isError = true
+							showcopyBtn = false
+							return
+						}
 					default:
 						log, err = sources.MyMemory(text, from, to)
 						isError = false
