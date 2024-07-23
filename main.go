@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"image/color"
 	"io"
 	"os"
@@ -11,6 +12,8 @@ import (
 	"gioui.org/io/clipboard"
 	"gioui.org/layout"
 	"gioui.org/op"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
 	"gioui.org/text"
 	"gioui.org/unit"
 	"gioui.org/widget"
@@ -34,7 +37,9 @@ var (
 			Axis: layout.Vertical,
 		},
 	}
-	topLabelColor     = color.NRGBAModel.Convert(color.RGBA{R: 0, G: 0, B: 255, A: 255}).(color.NRGBA)
+	th                = material.NewTheme()
+	topLabelColor     = color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+	globalColor       = color.NRGBA{R: 135, G: 39, B: 36, A: 255}
 	errorColor        = color.NRGBAModel.Convert(color.RGBA{R: 255, G: 0, B: 0, A: 255}).(color.NRGBA)
 	ops               op.Ops
 	translateField    component.TextField
@@ -79,16 +84,33 @@ func main() {
 
 // frame lays out the entire frame and returns the reusltant ops buffer.
 func frame(gtx C, w *app.Window) D {
-	th := material.NewTheme()
+	// Theme options
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
+	th.Palette.Bg = color.NRGBA{R: 32, G: 34, B: 36, A: 255}
+	th.Palette.Fg = color.NRGBA{R: 215, G: 218, B: 222, A: 255}
+	th.Palette.ContrastBg = globalColor
+	th.Palette.ContrastFg = color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+
+	// Set the background color
+	macro := op.Record(gtx.Ops)
+	rect := image.Rectangle{
+		Max: image.Point{
+			X: gtx.Constraints.Max.X,
+			Y: gtx.Constraints.Max.Y,
+		},
+	}
+
+	paint.FillShape(gtx.Ops, th.Palette.Bg, clip.Rect(rect).Op())
+	background := macro.Stop()
+
+	background.Add(gtx.Ops)
 
 	widgets := []layout.Widget{
-
 		func(gtx C) D {
-			label := material.H3(th, appName)
-			label.Color = topLabelColor
-			label.Alignment = text.Middle
-			return label.Layout(gtx)
+			toplabel := material.H3(th, appName)
+			toplabel.Color = topLabelColor
+			toplabel.Alignment = text.Middle
+			return toplabel.Layout(gtx)
 		},
 		func(gtx C) D {
 			return layout.Center.Layout(gtx, func(gtx C) D {
@@ -122,10 +144,16 @@ func frame(gtx C, w *app.Window) D {
 				gtx.Execute(op.InvalidateCmd{})
 			}
 			return layout.Center.Layout(gtx, func(gtx C) D {
+				mmRButton := material.RadioButton(th, radioButtonsGroup, "mm", "MyMemory")
+				mmRButton.IconColor = globalColor
+				gtRButton := material.RadioButton(th, radioButtonsGroup, "gt", "Google Translate")
+				gtRButton.IconColor = globalColor
+				aiRButton := material.RadioButton(th, radioButtonsGroup, "ai", "AI")
+				aiRButton.IconColor = globalColor
 				return layout.Flex{}.Layout(gtx,
-					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "mm", "MyMemory").Layout),
-					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "gt", "Google Translate").Layout),
-					layout.Rigid(material.RadioButton(th, radioButtonsGroup, "ai", "AI").Layout),
+					layout.Rigid(mmRButton.Layout),
+					layout.Rigid(gtRButton.Layout),
+					layout.Rigid(aiRButton.Layout),
 				)
 			})
 		},
@@ -206,7 +234,9 @@ func frame(gtx C, w *app.Window) D {
 				}()
 			}
 
-			return material.Button(th, &translateBtn, "Translate").Layout(gtx)
+			button := material.Button(th, &translateBtn, "Translate")
+			button.Background = globalColor
+			return button.Layout(gtx)
 
 		},
 		func(gtx C) D {
@@ -226,7 +256,9 @@ func frame(gtx C, w *app.Window) D {
 					})
 				}
 				// Now return the copy button
-				return material.Button(th, &CopyButton, "Copy").Layout(gtx)
+				copyButton := material.Button(th, &CopyButton, "Copy")
+				copyButton.Background = globalColor
+				return copyButton.Layout(gtx)
 			}
 			return D{}
 		},
