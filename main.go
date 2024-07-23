@@ -167,7 +167,7 @@ func frame(gtx C, w *app.Window) D {
 							return
 						}
 					case "GoogleTranslate":
-						log, err = sources.Gtrasnlate(text, from, to)
+						log, err = sources.GTrasnlate(text, from, to)
 						isError = false
 						showcopyBtn = true
 						if err != nil {

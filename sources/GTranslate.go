@@ -9,7 +9,7 @@ import (
 var result string
 
 // Gtranslate translates text from one language to another using the gtranslate package.
-func Gtrasnlate(text string, from string, to string) (string, error) {
+func GTrasnlate(text string, from string, to string) (string, error) {
 	// Call gtranslate TranslateWithParams function to translate the text
 	translated, err := gtranslate.TranslateWithParams(
 		text,
