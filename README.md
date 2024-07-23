@@ -53,8 +53,9 @@ go build -o gio-translator
 
 ## TODO
 
-* [ ]  Dark theme.
+* [x]  Dark theme.
 * [x]  AI as a translation source.
+* [ ]  Light/Dark theme switcher.
 
 ## Technologies Used
 
