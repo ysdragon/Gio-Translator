@@ -10,6 +10,7 @@ permissions:
 jobs:
   build_amd64:
     runs-on: ubuntu-latest
+    name: Build on amd64
     steps:
       - name: Update dependencies
         run: sudo apt-get update
