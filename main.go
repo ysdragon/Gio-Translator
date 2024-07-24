@@ -115,9 +115,14 @@ func frame(gtx C, w *app.Window) D {
 		},
 		func(gtx C) D {
 			return layout.Center.Layout(gtx, func(gtx C) D {
+				if isArabic(translateField.Text()) {
+					translateField.Alignment = text.End
+				} else {
+					translateField.Alignment = text.Start
+				}
+
 				return translateField.Layout(gtx, th, "Text")
 			})
-
 		},
 
 		func(gtx C) D {
